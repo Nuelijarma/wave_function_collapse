@@ -1,10 +1,14 @@
 import numpy as np
+from scipy.sparse import coo_matrix, csr_matrix
+
+# TODO:
+# - add counter of tile type, to get a distribution
 
 class Tileset():
     def __init__(self):
         self.num_tiles = 0
-        self.contraints_h = set({}) # Set. (i,j) present iff i can be on top of j.
-        self.contraints_v = set({}) # (i,j) present iff i can be at the left of j.
+        self.contraints_h = None # Sparse array. A[i,j]==1 iff i can be on top of j.
+        self.contraints_v = None # A[i,j]==1 iff i can be at the left of j.
         self.wrap_horizontal = False
         self.wrap_vertical = False
         self.tiles = [] # List of images. Implicite tile_num <--> image mapping.
@@ -41,8 +45,17 @@ class Tileset():
                     self.num_tiles += 1
 
         # Step 2: compute adjacency contraints
-        # (Note: this could be made fast with existing numpy functions.)
+        # 2a/ Collect indexed i,j for constraints (i can be next to j)
+        i_h, j_h, i_v, j_v, = [], [], [], []
         for i in range(n-shift_h):
             for j in range(m-shift_v):
-                self.contraints_h.add( (a[i,j],a[i+1 % n,j]) )
-                self.contraints_v.add( (a[i,j],a[i,j+1 * m]) )
+                i_h.append(a[i,j])
+                j_h.append(a[i+1 % n,j])
+                i_v.append(a[i,j])
+                j_v.append(a[i,j+1 % m)
+        # 2b/ Store constraints in (sparse) COO matrix
+        self.contraints_h = coo_matrix( (np.ones((len(i_h),),dtype=bool), (i_h,j_h)), shape=(self.num_tiles, self.num_tiles))
+        self.contraints_v = coo_matrix( (np.ones((len(i_v),),dtype=bool), (i_v,j_v)), shape=(self.num_tiles, self.num_tiles))
+        # 2c/ Store constraints in (sparse) CSR matrix
+        self.constraints_h = csr_matrix(self.contraints_h)
+        self.constraints_v = csr_matrix(self.contraints_v)
