@@ -12,6 +12,7 @@ class Tileset():
                       wrap_horizontal=False, wrap_vertical=False):
         """ Takes as input an image, slice it into tiles and compute
             constraints."""
+        self.num_tiles = 0
         self.wrap_horizontal = wrap_horizontal
         self.wrap_vertical = wrap_vertical
         n,m = img.shape
@@ -37,6 +38,7 @@ class Tileset():
                 else:
                     # Tile unknown
                     self.tiles.append(new_tile)
+                    self.num_tiles += 1
 
         # Step 2: compute adjacency contraints
         # (Note: this could be made fast with existing numpy functions.)
