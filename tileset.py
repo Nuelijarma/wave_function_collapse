@@ -1,14 +1,14 @@
 import numpy as np
 
 class Tileset():
-    def __init__():
+    def __init__(self):
         self.num_tiles = 0
         self.contraints_h = set({}) # Set. (i,j) present iff i can be on top of j.
         self.contraints_v = set({}) # (i,j) present iff i can be at the left of j.
         self.wrap_horizontal = False
         self.wrap_vertical = False
         self.tiles = [] # List of images. Implicite tile_num <--> image mapping.
-    def process_image(img, tile_size=2,
+    def process_image(self, img, tile_size=2,
                       wrap_horizontal=False, wrap_vertical=False):
         """ Takes as input an image, slice it into tiles and compute
             constraints."""
