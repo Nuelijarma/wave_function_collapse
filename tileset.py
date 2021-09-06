@@ -19,12 +19,13 @@ class Tileset():
         self.num_tiles = 0
         self.wrap_horizontal = wrap_horizontal
         self.wrap_vertical = wrap_vertical
-        n,m = img.shape
+        n,m,d = img.shape
         shift_h = 0 if wrap_horizontal else tile_size
         shift_v = 0 if wrap_vertical else tile_size
 
         # Image, as a set of tiles
-        a = np.arange((n-shift_h)*(m-shift_v)).reshape( ((n-shift_h),(m-shift_v)) )
+        # a = np.arange((n-shift_h)*(m-shift_v)).reshape( ((n-shift_h),(m-shift_v)) )
+        a = np.zeros( (n-shift_h,m-shift_v) )
 
         # Step 1: create all tiles
         for i in range(n-shift_h):
@@ -35,13 +36,14 @@ class Tileset():
                 new_tile = h_slice.take(np.arange(j,j+tile_size), axis=1, mode="wrap")
                 # Check if tile already exists
                 for k,old_tile in enumerate(self.tiles):
-                    if np.equal(new_tile, old_tile):
+                    if np.all(np.equal(new_tile, old_tile)):
                         # Tile already known
                         a[i,j] = k
                         break
                 else:
                     # Tile unknown
                     self.tiles.append(new_tile)
+                    a[i,j] = self.num_tiles
                     self.num_tiles += 1
 
         # Step 2: compute adjacency contraints
@@ -50,12 +52,12 @@ class Tileset():
         for i in range(n-shift_h):
             for j in range(m-shift_v):
                 i_h.append(a[i,j])
-                j_h.append(a[i+1 % n,j])
+                j_h.append(a[(i+1) % n,j])
                 i_v.append(a[i,j])
-                j_v.append(a[i,j+1 % m)
+                j_v.append(a[i,(j+1) % m])
         # 2b/ Store constraints in (sparse) COO matrix
-        self.contraints_h = coo_matrix( (np.ones((len(i_h),),dtype=bool), (i_h,j_h)), shape=(self.num_tiles, self.num_tiles))
-        self.contraints_v = coo_matrix( (np.ones((len(i_v),),dtype=bool), (i_v,j_v)), shape=(self.num_tiles, self.num_tiles))
+        self.constraints_h = coo_matrix( (np.ones((len(i_h),),dtype=bool), (i_h,j_h)), shape=(self.num_tiles, self.num_tiles))
+        self.constraints_v = coo_matrix( (np.ones((len(i_v),),dtype=bool), (i_v,j_v)), shape=(self.num_tiles, self.num_tiles))
         # 2c/ Store constraints in (sparse) CSR matrix
-        self.constraints_h = csr_matrix(self.contraints_h)
-        self.constraints_v = csr_matrix(self.contraints_v)
+        self.constraints_h = csr_matrix(self.constraints_h)
+        self.constraints_v = csr_matrix(self.constraints_v)
