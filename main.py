@@ -29,8 +29,8 @@ if __name__=="__main__":
 
     # Generate image
     wave = Wave()
-    wave.generate(tiles, args.output_size[0], args.output_size[1])
-    img_out = tiles.generate_image(wave.get_output())
+    wave.run(tiles, args.output_size[0], args.output_size[1])
 
     # Output final image
+    img_out = tiles.generate_image(wave.get_output())
     imsave(args.output_file, img_out)

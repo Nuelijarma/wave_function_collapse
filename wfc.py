@@ -21,8 +21,8 @@ class Wave():
         self.bytemap = None
         self.collapsed = None
         self.tiles = None
-    def generate(self, t, n, m):
-        """ Generates and image of size (n,m) from a tileset t. """
+    def run(self, t, n, m):
+        """ Generates an output of size (n,m) from a tileset t. """
         self.tileset = t
         self.n = n
         self.m = m
