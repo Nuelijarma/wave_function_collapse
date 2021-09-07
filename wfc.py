@@ -31,7 +31,7 @@ class Wave():
         self.shift_v = 0 if t.wrap_vertical else tile_size
 
         # Initialize the output and the bitmap
-        self.output = np.empty( (n,m)+t.tiles[0][0,0].shape )
+        self.output = np.empty( (n,m), dtype=int )
         self.bytemap = np.ones( (n-self.shift_h,m-self.shift_v,t.num_tiles), dtype=bool )
         self.collapsed = np.zeros( (n-self.shift_h,m-self.shift_v), dtype=bool )
 
@@ -69,7 +69,7 @@ class Wave():
         self.bytemap[i,j] = False
         self.bytemap[i,j,tile_idx] = True
         # Update the output
-        self.output[i,j] = self.tileset.tiles[tile_idx][0,0]
+        self.output[i,j] = tile_idx
         # Mark the pixel as collapsed
         self.collapsed[i,j] = True
     def update(self, i, j, constraints):

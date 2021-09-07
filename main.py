@@ -19,17 +19,18 @@ if __name__=="__main__":
     args = parser.parse_args()
 
     # Read input image
-    img = imread(args.input_file)
+    img_in = imread(args.input_file)
 
     # Generate tileset
     tiles = Tileset()
-    tiles.process_image(img, tile_size=args.tile_size,
+    tiles.process_image(img_in, tile_size=args.tile_size,
         wrap_horizontal=args.wrap_horizontal,
         wrap_vertical=args.wrap_vertical)
 
     # Generate image
     wave = Wave()
     wave.generate(tiles, args.output_size[0], args.output_size[1])
+    img_out = tiles.generate_image(wave.get_output())
 
     # Output final image
-    imsave(args.output_file, wave.get_output())
+    imsave(args.output_file, img_out)
